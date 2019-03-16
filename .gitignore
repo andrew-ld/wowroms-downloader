@@ -1,0 +1,4 @@
+venv/
+.idea/
+roms/
+__pycache__/
