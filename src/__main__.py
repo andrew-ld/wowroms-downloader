@@ -15,12 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with wowroms-downloader. If not, see <http://www.gnu.org/licenses/>.
 
-import gevent.monkey
-gevent.monkey.patch_all()
-
-import uvloop
-uvloop.install()
-
 import bs4
 import os.path
 import asyncio
@@ -32,7 +26,7 @@ import time
 import ssl
 
 
-ROOT_URL = ""; raise ValueError("EDIT ROOT_URL")
+ROOT_URL = "https://wowroms.com"
 MAIN_PAGE = ROOT_URL + "/en/all-roms/list/consoles"
 DL_API = ROOT_URL + "/en/emulators-roms/download/1/1"
 DL_DIR = "roms/"
@@ -132,12 +126,12 @@ async def download_rom(url, client):
             file.write(data)
 
 
-async def main(loop):
+async def main():
     conn = aiohttp.TCPConnector(
-        limit=10, loop=loop,
+        limit=10,
         enable_cleanup_closed=True,
         force_close=True,
-        ssl=ssl.SSLContext(5)
+        ssl=ssl.SSLContext()
     )
 
     async with aiohttp.ClientSession(connector=conn) as client:
@@ -172,6 +166,4 @@ if __name__ == "__main__":
     if not os.path.isdir(DL_DIR):
         os.mkdir(DL_DIR)
 
-    _loop = asyncio.get_event_loop()
-    _future = asyncio.ensure_future(main(_loop))
-    _loop.run_until_complete(_future)
+    asyncio.run(main())
